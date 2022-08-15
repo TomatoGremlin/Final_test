@@ -7,12 +7,22 @@
 #include <math.h>
 #define THREAD_COUNT 3
 
-
+unsigned N;
+unsigned M;
+double result = 0;
 
 void *routine1(void* arg){
+    double **matrix = (double**)arg;
+    double sum;
    
-   
-   
+    for (int i = 0; i < N/THREAD_COUNT; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+            sum += matrix[N][M]*matrix[N][M];
+        }
+    }
+    result += sqrt(sum); 
 }
 
 int main(int argc, char **argp)
@@ -28,27 +38,17 @@ int main(int argc, char **argp)
            matrix[N][M] = (double)atoi(argp[i]);
         }
     }
-    double sum;
-    double result;
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < M; j++)
-        {
-            sum += matrix[N][M]*matrix[N][M];
-        }
-    }
-    result = sqrt(sum);
     
-    pthread_t threads [THREAD_COUNT ];
-
+    pthread_t threads [THREAD_COUNT];
     for (size_t j = 0; j < THREAD_COUNT ; j++)
     {
-        if (pthread_create(&threads[j], NULL, routine1, NULL))
+        if (pthread_create(&threads[j], NULL, routine1, matrix))
         {
             perror("thread create");
             return EXIT_FAILURE;
         }
     }
+
     for (size_t j = 0; j < THREAD_COUNT ; j++)
     {
         if (pthread_join(threads[j], NULL))
@@ -58,14 +58,17 @@ int main(int argc, char **argp)
         }
     }
 
-    FILE *f = fopen("file_name", "w+");
+    FILE *f = fopen(argp[argc-1], "w+");
     if (f == NULL)
     {
         fprintf(stderr, "Could not open file\n");
         return -1;
     }
-
-    fprintf(f, "%lf\n", result);
+    for (size_t i = 0; i < N; i++)
+    {
+        fprintf(f,"%lf\n", result);
+    }
+    
     fclose(f);
  
     return 0;
