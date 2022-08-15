@@ -4,18 +4,41 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <pthread.h>
+#include <math.h>
 #define THREAD_COUNT 3
 
+
+
 void *routine1(void* arg){
-    char* MSG= (char*)arg;
-    printf("%s\n", MSG);
-    printf("Process PID = %d, Thread ID = %ld\n\n", getpid(), pthread_self());
+   
+   
+   
 }
 
 int main(int argc, char **argp)
 {
     unsigned N = atoi(argp[1]);
     unsigned M = atoi(argp[2]);
+
+    double matrix [ N ][ M ];
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+           matrix[N][M] = (double)atoi(argp[i]);
+        }
+    }
+    double sum;
+    double result;
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+            sum += matrix[N][M]*matrix[N][M];
+        }
+    }
+    result = sqrt(sum);
+    
     pthread_t threads [THREAD_COUNT ];
 
     for (size_t j = 0; j < THREAD_COUNT ; j++)
@@ -34,5 +57,16 @@ int main(int argc, char **argp)
             return EXIT_FAILURE;
         }
     }
+
+    FILE *f = fopen("file_name", "w+");
+    if (f == NULL)
+    {
+        fprintf(stderr, "Could not open file\n");
+        return -1;
+    }
+
+    fprintf(f, "%lf\n", result);
+    fclose(f);
+ 
     return 0;
 }
