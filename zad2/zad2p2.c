@@ -60,8 +60,7 @@ int main(int argc, char **argp)
     int totalChild=0;
     
     int fd[2];
-    unsigned N = atoi(argp[1]);
-    unsigned M = atoi(argp[2]);
+
     pthread_t threads [n-1];
 
     for (size_t j = 1; j < n ; j++)
