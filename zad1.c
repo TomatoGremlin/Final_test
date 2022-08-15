@@ -2,7 +2,7 @@
 #include<time.h>
 #include<stdlib.h>
 #include<string.h>
-#include<math.h>
+#include<time.h>
 //#define LAPTOPS_COUNT 4
 
 //  gcc zad1.c -o zad1 -D LAPTOPS_COUNT=4
@@ -87,16 +87,9 @@ Laptop* minPriceItem(Laptop* p){
     return &p[min_index];
 }
 
-int compare_Laptops(const void *p1, const void *p2) {
-    const Laptop *prod1 = p1, *prod2 = p2;
-
-    if(fabs(prod1->price - prod2->price) > 0.01) {
-        return 0;
-    } 
-    return -1;
-}
 
 int main() { 
+    srand(time(NULL));
     Laptop *Laptop_list;
     Laptop_list = malloc(sizeof(Laptop)*LAPTOPS_COUNT);
     if(!Laptop_list) {
