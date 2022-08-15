@@ -20,52 +20,60 @@ int onesCount(int mask)
 }
 
 int File_op(char* name){
-    FILE *read_binary = fopen(name, "rb");
-    if (read_binary == NULL)
+    FILE *read = fopen(name, "r");
+    if (read == NULL)
     {
         fprintf(stderr, "%s - not exists!\n", name);
-        return -1;
+        exit(-1);
     }
-    int number[10];
-
-    while (fread(number, sizeof(int), number, read_binary) != EOF)
+    char new_line = getc(read);
+    int line_counter;
+    while (new_line != EOF)
     {
+        if (new_line == '\n')
+            line_counter++;
+        new_line = getc(read);
     }
 
-    fclose(read_binary);
+    rewind(read);
+    int number[line_counter];
 
-    int bits;
-    for (size_t i = 0; i <10; i++)
+    for (size_t i = 0; i < line_counter; i++)
+    {
+        fscanf(read, "%d", &number[i]);
+    }
+
+    fclose(read);
+
+    int bits = 0;
+    for (size_t i = 0; i < line_counter; i++)
     {
         bits += onesCount(number[i]);
     }
     return bits; //bits in current file
 }
+int totalChild=0;
+pthread_mutex_t mux;
 
 void *routine1(void* string){
     char* arg = (char*)string;
     int Cur_child_sum = File_op(arg);
-    printf("%s - %d", arg, Cur_child_sum);
+    printf("%s - %d\n", arg, Cur_child_sum);
+    pthread_mutex_lock (&mux);
     totalChild += Cur_child_sum;
+    pthread_mutex_unlock (&mux);
 
-    read(fd[0], &Cur_child_sum, sizeof(Cur_child_sum));
-    write(fd[1], &Cur_child_sum, sizeof(Cur_child_sum));
-    close(fd[0]);
-    close(fd[1]);
 }
 
 int main(int argc, char **argp)
 {
-    int n = argc; 
-    int totalChild=0;
-    
+    int n = argc-1; 
     int fd[2];
+    pthread_t threads [n];
 
-    pthread_t threads [n-1];
-
-    for (size_t j = 1; j < n ; j++)
+    for (size_t j = 0; j < n ; j++)
     {
-        if (pthread_create(&threads[j], NULL, routine1, argp[i]))
+        if (pthread_create(&threads[j], NULL, routine1, argp[j+1]))
         {
             perror("thread create");
             return EXIT_FAILURE;
@@ -79,5 +87,8 @@ int main(int argc, char **argp)
             return EXIT_FAILURE;
         }
     }
+
+    printf("Total sum - %d\n", totalChild);
+    pthread_mutex_destroy(&mux);
     return 0;
 }
