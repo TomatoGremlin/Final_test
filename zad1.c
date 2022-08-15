@@ -9,7 +9,7 @@
 //  ./zad1 
 
 typedef struct Laptop {
-    unsigned int id;
+    unsigned long id;
     char Laptop_brand[100];
     double weight;
     double price;
@@ -25,20 +25,27 @@ void random_Laptop(Laptop *p) {
 
     int length = random_generate(8, 12);
     p->Laptop_brand[0] = random_generate('A', 'Z');
+    
   
-    for (int j = 1; j < length; j++)
+    for (int j = 1; j <= (length-1)*2; j++)
     {
-        p->Laptop_brand[j] = random_generate('a', 'z');
-        //p->Laptop_brand[j+1] = ' ';
+        if (j%2 == 0)
+        {
+            p->Laptop_brand[j] = random_generate('a', 'z');
+        }else
+        {
+            p->Laptop_brand[j] = ' ';
+        }
     }
 
     p->weight = random_generate(25, 10000)/1000.;
     p->price = random_generate(1000, 500000)/100.;
+    
 
 }
 
 void print_Laptop(Laptop *p) {
-    printf("Id:%d, Weight: %.3lf, Price:%.2lf, Brand: %s\n",
+    printf("Id:%lu, Weight: %.3lf, Price:%.2lf, Brand: %s\n",
       p->id, p->weight, p->price, p->Laptop_brand);
 }
 
@@ -63,6 +70,7 @@ Laptop* minPriceItem(Laptop* p){
         fprintf(stderr, "Error\n");
         return NULL;
     }
+    
 
     double min  = p[0].price;
     int min_index = 0;
