@@ -68,7 +68,6 @@ void *routine1(void* string){
 int main(int argc, char **argp)
 {
     int n = argc-1; 
-    int fd[2];
     pthread_t threads [n];
 
     for (size_t j = 0; j < n ; j++)
